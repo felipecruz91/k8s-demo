@@ -1,39 +1,52 @@
-apiVersion: apps/v1beta1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
-  name: grafana
+  name: service-grafana-standalone
+  labels:
+    name: service-grafana-standalone
+    role: service
 spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    name: grafana-standalone
+  type: LoadBalancer
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: grafana-standalone
+spec:
+  serviceName: "service-grafana-standalone"
   replicas: 1
   template:
     metadata:
       labels:
-        app: grafana
+        name: grafana-standalone
+        role: standalone
     spec:
-      nodeSelector:
-        "beta.kubernetes.io/os": linux
       containers:
-      - name: grafana
-        image: grafana/grafana:6.1.6
-        ports:
-        - containerPort: 3000
-        name: grafana
+        - name: grafana
+          image: grafana/grafana:6.1.6
+          securityContext:
+            runAsUser: 0
+          env:
+            - name: GF_SERVER_DOMAIN
+              value: "localhost"
+            - name: GF_SERVER_ROOT_URL
+              value: "http://localhost"
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: volume-grafana-standalone
+  volumeClaimTemplates:
+    - metadata:
+        name: volume-grafana-standalone
+      spec:
+        accessModes: ["ReadWriteOnce"]
         resources:
-          limits:
-            cpu: 200m
-            memory: 200Mi
           requests:
-            cpu: 100m
-            memory: 100Mi  
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: grafana
-spec:
-  ports:
-  - protocol: TCP
-    port: 3000
-  clusterIP: 10.110.86.83
-  type: LoadBalancer
-  selector:
-    app: grafana
+            storage: 5Gi
