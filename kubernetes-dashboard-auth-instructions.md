@@ -6,8 +6,10 @@ Run the dashboard:
 
 By default the dashboard is secured, therefore  you would need to grab the Bearer token:
 
-    λ kubectl -n kube-system describe secrets replicaset-controller-token-fx5lv
+    λ bash auth.sh
 
-Finally access the dashboard through the following URL:
+Copy the token that got printed out via console.    
 
-http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+Kubectl will make Dashboard available at http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ and paste the token from the previous step.
+
+More info abuot the dashboard [here](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/).

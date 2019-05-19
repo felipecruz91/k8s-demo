@@ -26,3 +26,6 @@ kubectl get svc
 
 # Ping
 curl "http://localhost/api/Health"
+
+# Crate Horizontal Pod Autoscaler
+kubectl autoscale deployment mywebapi --cpu-percent=50 --min=1 --max=10
