@@ -21,7 +21,7 @@ spec:
           claimName: grafana-claim
       containers:
       - name: grafana
-        image: pharosproduction/grafana:6
+        image: grafana/grafana:6.1.6
         securityContext:
           runAsUser: 0
         imagePullPolicy: IfNotPresent
